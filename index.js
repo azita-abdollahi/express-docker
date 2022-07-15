@@ -1,0 +1,12 @@
+const express= require("express")
+const cors= require("cors")
+const config= require("config")
+const routes= require('./server/routes/movieRouter')
+let app= express()
+let port= process.env.PORT|| config.get("PORT")
+app.use(cors("*"))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+app.use('/',routes)
+app.listen(port, () => console.log(`Movie Service Running at Port http://192.168.64.128: ${port} `))

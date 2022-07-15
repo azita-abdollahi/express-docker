@@ -1,0 +1,42 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo:4.2
+    container_name: mongodb
+    networks:
+      - api-net
+    env_file: ./mongo_env
+    volumes:
+      - ./mongo-data:/data/db
+  backend:
+    image: backend-express
+    container_name: backend-container
+    build: 
+      context: .
+    depends_on:
+      - mongodb
+    networks: 
+      - api-net
+  mongo-express:
+    image: mongo-express:0.54.0
+    container_name: mongo-express
+    depends_on:
+      - mongodb
+    networks:
+      - api-net
+    env_file: ./mongo-express_env
+  nginx: 
+    image: nginx:1.21
+    container_name: nginx_proxy
+    restart: on-failure
+    depends_on:
+      - backend
+    networks: 
+      - api-net
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./conf.d/:/etc/nginx/conf.d/
+networks:
+  api-net:
